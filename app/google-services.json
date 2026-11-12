@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "226387182663",
+    "project_id": "gk-mobile-35d43",
+    "storage_bucket": "gk-mobile-35d43.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226387182663:android:1e6c217830b6e273d6dd62",
+        "android_client_info": {
+          "package_name": "com.example.gk_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBdADhGGsH67BvsQVv0fVyD8EvAT9HT2s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

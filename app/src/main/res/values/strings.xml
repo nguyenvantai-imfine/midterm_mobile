@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Quản lý Sinh viên</string>
+
+    <!-- General / Common -->
+    <string name="app_title">QUẢN LÝ SINH VIÊN</string>
+    <string name="btn_save">LƯU</string>
+    <string name="btn_cancel">Hủy</string>
+    <string name="btn_delete">Xóa</string>
+    <string name="btn_edit">Sửa</string>
+    <string name="btn_export_csv">Xuất CSV</string>
+    <string name="btn_login">ĐĂNG NHẬP</string>
+    <string name="btn_logout">ĐĂNG XUẤT</string>
+    <string name="confirm_title">Xác nhận</string>
+    <string name="confirm_delete_title">Xác nhận xóa</string>
+    <string name="loading">Đang tải…</string>
+    <string name="empty_data">Không có dữ liệu</string>
+
+    <!-- Auth & Account -->
+    <string name="login_title">ĐĂNG NHẬP HỆ THỐNG</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Mật khẩu</string>
+    <string name="err_empty_email">Vui lòng nhập Email</string>
+    <string name="err_invalid_email">Email không đúng định dạng (ví dụ: example@gmail.com)</string>
+    <string name="err_empty_password">Vui lòng nhập mật khẩu</string>
+    <string name="account_locked">Tài khoản của bạn đã bị khóa!</string>
+
+    <!-- Dashboard Main -->
+    <string name="section_main_functions">CHỨC NĂNG CHÍNH</string>
+    <string name="menu_student_management">Quản lý Sinh viên</string>
+    <string name="menu_student_management_sub">Xem danh sách, thêm, sửa, xóa, xuất file CSV</string>
+    <string name="menu_login_history">Lịch sử đăng nhập của tôi</string>
+    <string name="menu_login_history_sub">Xem nhật ký các lần đăng nhập thiết bị</string>
+    <string name="menu_user_management">Quản lý Người dùng hệ thống</string>
+    <string name="menu_user_management_sub">Dành riêng cho Admin hệ thống</string>
+
+    <!-- Student Module -->
+    <string name="student_list_title">Danh sách Sinh viên</string>
+    <string name="student_detail_title">Chi tiết Sinh viên</string>
+    <string name="student_form_title">Thông tin Sinh viên</string>
+    <string name="student_empty_list">Chưa có sinh viên nào trong hệ thống</string>
+    <string name="student_fab_add">Thêm Sinh Viên</string>
+    <string name="hint_student_code">Mã sinh viên (*)</string>
+    <string name="hint_student_name">Họ và tên (*)</string>
+    <string name="hint_student_age">Tuổi</string>
+    <string name="hint_student_gender">Giới tính</string>
+    <string name="hint_student_class">Lớp (*)</string>
+    <string name="hint_student_faculty">Khoa (*)</string>
+    <string name="hint_student_phone">Số điện thoại</string>
+    <string name="hint_student_address">Địa chỉ</string>
+    <string name="btn_save_student">LƯU SINH VIÊN</string>
+    <string name="btn_update_student">CẬP NHẬT SINH VIÊN</string>
+    <string name="btn_edit_student">Sửa sinh viên</string>
+    <string name="btn_delete_student">Xóa sinh viên</string>
+
+    <!-- Login History -->
+    <string name="login_history_title">Lịch sử Đăng nhập</string>
+    <string name="login_history_empty">Chưa có lịch sử đăng nhập</string>
+</resources>
