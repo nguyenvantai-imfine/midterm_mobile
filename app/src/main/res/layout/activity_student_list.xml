@@ -17,20 +17,78 @@
             app:title="Danh sách Sinh viên"
             app:titleTextColor="@android:color/white" />
 
+        <!-- Cụm công cụ: Tìm kiếm, Sắp xếp, Lọc và Xuất CSV -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="end">
+            android:orientation="vertical"
+            android:padding="12dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnExportCsv"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+            <!-- Hàng 1: Ô tìm kiếm, Nút Sắp xếp và Nút Lọc -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Xuất CSV"
-                app:icon="@android:drawable/ic_menu_save" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Ô tìm kiếm -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    android:hint="Tìm kiếm sinh viên...">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtSearchStudent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Nút Sắp xếp -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSort"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sắp xếp"
+                    android:layout_marginEnd="4dp"
+                    app:icon="@android:drawable/ic_menu_sort_by_size" />
+
+                <!-- Nút Lọc -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilter"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lọc"
+                    app:icon="@android:drawable/ic_menu_manage" />
+            </LinearLayout>
+
+            <!-- Hàng 2: Nút Xuất CSV -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExportCsv"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xuất CSV"
+                    app:icon="@android:drawable/ic_menu_save" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <FrameLayout

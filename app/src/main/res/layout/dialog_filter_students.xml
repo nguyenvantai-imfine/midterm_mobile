@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bộ lọc danh sách sinh viên"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorPrimary"
+            android:layout_marginBottom="14dp" />
+
+        <!-- 1. Khoa (Có gợi ý AutoComplete) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            <AutoCompleteTextView
+                android:id="@+id/actvFaculty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Khoa"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 2. Lớp (Tự động lọc theo Khoa đã chọn hoặc gợi ý độc lập) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            <AutoCompleteTextView
+                android:id="@+id/actvClassName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Lớp"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 3. Tên sinh viên -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            <AutoCompleteTextView
+                android:id="@+id/actvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tên sinh viên"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 4. Tuổi -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtAge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tuổi"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 5. Giới tính (Chọn Nam / Nữ / Tất cả) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Giới tính:"
+            android:textSize="14sp"
+            android:textColor="#616161"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
+            <RadioButton
+                android:id="@+id/radioGenderAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tất cả"
+                android:checked="true"
+                android:layout_marginEnd="16dp" />
+            <RadioButton
+                android:id="@+id/radioGenderMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nam"
+                android:layout_marginEnd="16dp" />
+            <RadioButton
+                android:id="@+id/radioGenderFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nữ" />
+        </RadioGroup>
+
+        <!-- 6. Mã sinh viên -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            <AutoCompleteTextView
+                android:id="@+id/actvStudentCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mã sinh viên"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+</ScrollView>
