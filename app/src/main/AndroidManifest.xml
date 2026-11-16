@@ -22,6 +22,7 @@
             android:theme="@style/Theme.GK_MOBILE">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -53,7 +54,23 @@
         <activity
             android:name=".ui.user.LoginHistoryActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.user.UserListActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
+        <!-- User Login History & User Management Activities -->
+        <activity
+            android:name=".ui.user.LoginHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.user.UserListActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.user.UserFormActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.example.gk_mobile.repository;
 
 import android.os.Build;
 import com.example.gk_mobile.model.LoginHistory;
+import com.example.gk_mobile.model.User;
 import com.example.gk_mobile.utils.Constants;
 import com.example.gk_mobile.utils.SessionManager;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -21,6 +22,11 @@ public class UserRepository {
 
     public interface OnLoginHistoryLoadedListener {
         void onSuccess(List<LoginHistory> historyList);
+        void onError(Exception e);
+    }
+
+    public interface OnUsersLoadedListener {
+        void onSuccess(List<User> userList);
         void onError(Exception e);
     }
 
@@ -119,5 +125,27 @@ public class UserRepository {
                             .addOnFailureListener(listener::onError);
                 })
                 .addOnFailureListener(listener::onError);
+    }
+
+    public ListenerRegistration getUsersRealtime(OnUsersLoadedListener listener) {
+        return db.collection(Constants.COLLECTION_USERS)
+                .addSnapshotListener((snapshots, error) -> {
+                    if (error != null) {
+                        listener.onError(error);
+                        return;
+                    }
+
+                    List<User> list = new ArrayList<>();
+                    if (snapshots != null) {
+                        for (DocumentSnapshot doc : snapshots.getDocuments()) {
+                            User user = doc.toObject(User.class);
+                            if (user != null) {
+                                user.setUid(doc.getId());
+                                list.add(user);
+                            }
+                        }
+                    }
+                    listener.onSuccess(list);
+                });
     }
 }

@@ -11,6 +11,7 @@ import com.example.gk_mobile.model.User;
 import com.example.gk_mobile.ui.auth.LoginActivity;
 import com.example.gk_mobile.ui.student.StudentListActivity;
 import com.example.gk_mobile.ui.user.LoginHistoryActivity;
+import com.example.gk_mobile.ui.user.UserListActivity;
 import com.example.gk_mobile.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         User currentUser = SessionManager.getInstance().getCurrentUser();
         if (currentUser == null) {
@@ -72,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
         binding.cardUsers.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
         binding.cardUsers.setOnClickListener(v -> {
             if (isAdmin) {
-                Toast.makeText(MainActivity.this, "Màn hình Quản lý Người dùng (Thành viên 1)", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Màn hình Quản lý Người dùng (Thành viên 1)", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, UserListActivity.class));
             } else {
                 Toast.makeText(MainActivity.this, "Chỉ Admin mới có quyền quản lý người dùng!", Toast.LENGTH_SHORT).show();
             }

@@ -12,12 +12,15 @@ public class User {
     private String email;
     private String avatarUrl;
     private Timestamp createdAt;
+    private Timestamp date;
+    private String address;
+
 
     public User() {
         // Required empty constructor for Firestore deserialization
     }
 
-    public User(String uid, String name, int age, String phone, String status, String role, String email, String avatarUrl) {
+    public User(String uid, String name, int age, String phone, String status, String role, String email, String avatarUrl, Timestamp date, String address) {
         this.uid = uid;
         this.name = name;
         this.age = age;
@@ -26,6 +29,8 @@ public class User {
         this.role = role;
         this.email = email;
         this.avatarUrl = avatarUrl;
+        this.date = date;
+        this.address = address;
     }
 
     public String getUid() {
@@ -99,4 +104,20 @@ public class User {
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
+    public Timestamp getDate() {
+        return date;
+    }
+
+    public void setDate(Timestamp date) {
+        this.date = date;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }
+
