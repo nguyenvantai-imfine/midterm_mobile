@@ -1,21 +1,37 @@
 {
   "project_info": {
+<<<<<<< HEAD
     "project_number": "734757614044",
     "project_id": "mobile-app-firebase-midterm",
     "storage_bucket": "mobile-app-firebase-midterm.firebasestorage.app"
+=======
+    "project_number": "226387182663",
+    "project_id": "gk-mobile-35d43",
+    "storage_bucket": "gk-mobile-35d43.firebasestorage.app"
+>>>>>>> duc
   },
   "client": [
     {
       "client_info": {
+<<<<<<< HEAD
         "mobilesdk_app_id": "1:734757614044:android:ff2fb8dc37f52ec192df19",
         "android_client_info": {
           "package_name": "com.example.midterm_mobile"
+=======
+        "mobilesdk_app_id": "1:226387182663:android:1e6c217830b6e273d6dd62",
+        "android_client_info": {
+          "package_name": "com.example.gk_mobile"
+>>>>>>> duc
         }
       },
       "oauth_client": [],
       "api_key": [
         {
+<<<<<<< HEAD
           "current_key": "AIzaSyAW0OBm3IsQQV-WOHfMe6cg4VFcb6ovTLY"
+=======
+          "current_key": "AIzaSyDBdADhGGsH67BvsQVv0fVyD8EvAT9HT2s"
+>>>>>>> duc
         }
       ],
       "services": {

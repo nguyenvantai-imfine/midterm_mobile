@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1. Chọn tiêu chí sắp xếp (Thứ tự ưu tiên từ trên xuống)"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Thứ tự ưu tiên mới -->
+    <CheckBox android:id="@+id/chkFaculty" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="1. Khoa (faculty)" android:checked="true" />
+    <CheckBox android:id="@+id/chkClassName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="2. Lớp (className)" android:checked="true" />
+    <CheckBox android:id="@+id/chkName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="3. Tên (name)" android:checked="true" />
+    <CheckBox android:id="@+id/chkAge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="4. Tuổi (age)" android:checked="true" />
+    <CheckBox android:id="@+id/chkGender" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="5. Giới tính (gender)" android:checked="true" />
+    <CheckBox android:id="@+id/chkStudentCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="6. Mã sinh viên (studentCode)" android:checked="true" />
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="10dp" />
+
+    <!-- NHÓM 1: Chiều chữ cái (Khoa, Lớp, Tên, Giới tính, MSSV) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2. Chiều chữ cái (Khoa, Tên)"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        android:layout_marginBottom="4dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupString"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/radioAZ" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="A -> Z" android:checked="true" android:layout_marginEnd="16dp"/>
+        <RadioButton android:id="@+id/radioZA" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Z -> A" />
+    </RadioGroup>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginVertical="10dp" />
+
+    <!-- NHÓM 2: Chiều số (Tuổi) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="3. Chiều số (Lớp, Tuổi, Mã số sinh viên)"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        android:layout_marginBottom="4dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/radioSmallToLarge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bé đến lớn" android:checked="true" android:layout_marginEnd="16dp"/>
+        <RadioButton android:id="@+id/radioLargeToSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lớn đến bé" />
+    </RadioGroup>
+
+</LinearLayout>

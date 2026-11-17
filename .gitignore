@@ -13,6 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+<<<<<<< HEAD
 
 # Android Studio
 .idea/
@@ -48,3 +49,5 @@ Thumbs.db
 captures/
 .externalNativeBuild/
 .cxx/
+=======
+>>>>>>> duc
