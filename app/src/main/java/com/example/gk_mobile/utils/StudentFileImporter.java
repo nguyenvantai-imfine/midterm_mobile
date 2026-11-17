@@ -112,7 +112,8 @@ public class StudentFileImporter {
     // CSV
     // ------------------------------------------------------------------
 
-    private static List<String[]> parseCsvRows(InputStream inputStream) throws Exception {
+    // Package-private để CertificateFileImporter dùng lại bộ đọc CSV này.
+    static List<String[]> parseCsvRows(InputStream inputStream) throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte[] chunk = new byte[8192];
         int n;
@@ -191,7 +192,8 @@ public class StudentFileImporter {
     // XLSX (đọc file zip + XML bằng thư viện có sẵn của Android)
     // ------------------------------------------------------------------
 
-    private static List<String[]> parseXlsxRows(InputStream inputStream) throws Exception {
+    // Package-private để CertificateFileImporter dùng lại bộ đọc XLSX này.
+    static List<String[]> parseXlsxRows(InputStream inputStream) throws Exception {
         List<String> sharedStrings = new ArrayList<>();
         List<String[]> rawRows = null;
         boolean foundSheet1 = false;

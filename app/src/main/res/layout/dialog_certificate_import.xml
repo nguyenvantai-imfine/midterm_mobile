@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Import Chứng Chỉ"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/progressBarCertImport"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:indeterminate="true" />
+
+    <TextView
+        android:id="@+id/tvCertImportStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:text="Đang đọc file và kiểm tra dữ liệu..."
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:id="@+id/layoutCertImportStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvCertSuccessCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="• Thêm mới thành công: 0 chứng chỉ"
+            android:textColor="#2E7D32"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvCertDuplicateCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="• Trùng (bỏ qua): 0 chứng chỉ"
+            android:textColor="#F57C00"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvCertErrorCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Dòng lỗi: 0 dòng"
+            android:textColor="#D32F2F"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Chi tiết từng dòng lỗi (code chỉ hiển thị tối đa vài chục dòng đầu) -->
+    <ScrollView
+        android:id="@+id/scrollCertImportErrors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvCertImportErrors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#D32F2F"
+            android:textSize="13sp" />
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCertImportClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="Đóng" />
+
+</LinearLayout>

@@ -1,0 +1,84 @@
+rules_version = '2';
+
+// Security Rules cho ứng dụng quản lý sinh viên (3 role: admin, manager, employee).
+// Dán toàn bộ nội dung file này vào Firebase Console > Firestore Database > Rules > Publish.
+//
+// Quy tắc theo đề bài:
+//  - admin   : làm được mọi việc.
+//  - manager : làm được mọi việc liên quan đến sinh viên và chứng chỉ.
+//  - employee: chỉ xem; chỉ được sửa ảnh đại diện (avatarUrl) của chính mình.
+//  - Tài khoản bị khóa (status = Locked) không truy cập được dữ liệu.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Hàm dùng chung ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Document users/{uid} của người đang đăng nhập (null-safe: get() lỗi => bị từ chối).
+    function me() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isActive() {
+      return signedIn() && me().status != 'Locked' && me().status != 'locked';
+    }
+
+    function isAdmin() {
+      return isActive() && me().role == 'admin';
+    }
+
+    function isManager() {
+      return isActive() && me().role == 'manager';
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // ---------- users ----------
+    match /users/{uid} {
+      // Admin xem mọi user; mỗi người xem được hồ sơ của chính mình.
+      // (Đọc hồ sơ của mình luôn được phép để lúc đăng nhập kiểm tra được trạng thái khóa.)
+      allow read: if isAdmin() || isOwner(uid);
+
+      // Chỉ admin tạo/xóa user.
+      allow create, delete: if isAdmin();
+
+      // Admin sửa mọi trường. Người dùng thường chỉ được đổi ảnh đại diện của chính mình.
+      allow update: if isAdmin()
+        || (isActive() && isOwner(uid)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avatarUrl']));
+
+      // ---------- users/{uid}/loginHistory ----------
+      match /loginHistory/{entryId} {
+        allow read: if isAdmin() || isOwner(uid);
+        // Ghi lịch sử khi chính người đó đăng nhập (hoặc admin).
+        allow create: if isAdmin() || isOwner(uid);
+        // Lịch sử không được sửa; chỉ admin xóa (khi xóa user).
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+    }
+
+    // ---------- students ----------
+    match /students/{studentId} {
+      // Mọi tài khoản đang hoạt động đều xem được.
+      allow read: if isActive();
+      // Chỉ admin và manager thêm/sửa/xóa.
+      allow create, update, delete: if isAdmin() || isManager();
+
+      // ---------- students/{studentId}/certificates ----------
+      match /certificates/{certId} {
+        allow read: if isActive();
+        allow create, update, delete: if isAdmin() || isManager();
+      }
+    }
+
+    // Mọi đường dẫn khác: từ chối.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

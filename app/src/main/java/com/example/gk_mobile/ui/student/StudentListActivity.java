@@ -22,8 +22,10 @@ import com.example.gk_mobile.R;
 import com.example.gk_mobile.adapter.StudentAdapter;
 import com.example.gk_mobile.databinding.ActivityStudentListBinding;
 import com.example.gk_mobile.model.Student;
+import com.example.gk_mobile.repository.StudentRepository;
 import com.example.gk_mobile.utils.ExcelExporter;
 import com.example.gk_mobile.utils.FileExporter;
+import com.example.gk_mobile.utils.SessionManager;
 import com.example.gk_mobile.utils.StudentFileImporter;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -100,11 +102,19 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
 
     private void setupRecyclerView() {
         adapter = new StudentAdapter(this);
+        // Employee chỉ xem: ẩn nút Sửa/Xóa trên từng dòng (khớp Security Rules).
+        adapter.setCanManage(SessionManager.getInstance().canManageStudents());
         binding.recyclerViewStudents.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerViewStudents.setAdapter(adapter);
     }
 
     private void setupActions() {
+        // Phân quyền: chỉ admin và manager được thêm sinh viên và import; xuất file thì mọi role dùng được.
+        boolean canManage = SessionManager.getInstance().canManageStudents();
+        binding.fabAddStudent.setVisibility(canManage ? View.VISIBLE : View.GONE);
+        binding.btnImportExcel.setVisibility(canManage ? View.VISIBLE : View.GONE);
+        binding.btnImportCsv.setVisibility(canManage ? View.VISIBLE : View.GONE);
+
         // Nút thêm sinh viên mới
         binding.fabAddStudent.setOnClickListener(v -> {
             Intent intent = new Intent(StudentListActivity.this, StudentFormActivity.class);
@@ -369,23 +379,40 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
 
     @Override
     public void onItemClick(Student student) {
-        Toast.makeText(this, "Chọn sinh viên: " + student.getName(), Toast.LENGTH_SHORT).show();
+        // Mở màn chi tiết sinh viên (có danh sách chứng chỉ).
+        Intent intent = new Intent(StudentListActivity.this, StudentDetailActivity.class);
+        intent.putExtra("student", student);
+        startActivity(intent);
     }
 
     @Override
     public void onEditStudent(Student student) {
+        if (!SessionManager.getInstance().canManageStudents()) return;
         Intent intent = new Intent(StudentListActivity.this, StudentFormActivity.class);
+        intent.putExtra("student", student); // form dùng extra này để chuyển sang chế độ sửa
         startActivity(intent);
     }
 
     @Override
     public void onDeleteStudent(Student student) {
+        if (!SessionManager.getInstance().canManageStudents()) return;
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc muốn xóa sinh viên " + student.getName() + " không?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    // Xử lý xóa trên Firestore
-                })
+                .setMessage("Bạn có chắc muốn xóa sinh viên " + student.getName() + " cùng toàn bộ chứng chỉ không?")
+                .setPositiveButton("Xóa", (dialog, which) ->
+                        new StudentRepository().deleteStudentWithCertificates(student.getStudentCode(),
+                                new StudentRepository.OnActionListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Toast.makeText(StudentListActivity.this, "Đã xóa sinh viên!", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        Toast.makeText(StudentListActivity.this,
+                                                "Lỗi khi xóa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }))
                 .setNegativeButton("Hủy", null)
                 .show();
     }
