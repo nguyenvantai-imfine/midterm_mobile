@@ -1,6 +1,7 @@
 package com.example.gk_mobile.adapter;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -27,9 +28,15 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     private final List<Student> filteredList = new ArrayList<>();
     private final OnStudentActionListener listener;
     private String currentQuery = "";
+    private boolean canManage = true; // false => ẩn nút Sửa/Xóa (employee chỉ xem)
 
     public StudentAdapter(OnStudentActionListener listener) {
         this.listener = listener;
+    }
+
+    public void setCanManage(boolean canManage) {
+        this.canManage = canManage;
+        notifyDataSetChanged();
     }
 
     public void setStudents(List<Student> students) {
@@ -253,6 +260,10 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(student);
         });
+
+        int actionVisibility = canManage ? View.VISIBLE : View.GONE;
+        holder.binding.btnEdit.setVisibility(actionVisibility);
+        holder.binding.btnDelete.setVisibility(actionVisibility);
 
         holder.binding.btnEdit.setOnClickListener(v -> {
             if (listener != null) listener.onEditStudent(student);

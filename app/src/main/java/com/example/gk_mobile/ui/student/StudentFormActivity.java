@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.gk_mobile.databinding.ActivityStudentFormBinding;
 import com.example.gk_mobile.model.Student;
 import com.example.gk_mobile.repository.StudentRepository;
+import com.example.gk_mobile.utils.SessionManager;
 
 public class StudentFormActivity extends AppCompatActivity {
 
@@ -17,6 +18,14 @@ public class StudentFormActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Chỉ admin và manager được thêm/sửa sinh viên (employee chỉ xem).
+        if (!SessionManager.getInstance().canManageStudents()) {
+            Toast.makeText(this, "Bạn không có quyền thực hiện thao tác này!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         binding = ActivityStudentFormBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
