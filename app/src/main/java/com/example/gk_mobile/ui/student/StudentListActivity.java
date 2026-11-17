@@ -1,12 +1,19 @@
 package com.example.gk_mobile.ui.student;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,9 +22,12 @@ import com.example.gk_mobile.R;
 import com.example.gk_mobile.adapter.StudentAdapter;
 import com.example.gk_mobile.databinding.ActivityStudentListBinding;
 import com.example.gk_mobile.model.Student;
+import com.example.gk_mobile.utils.ExcelExporter;
+import com.example.gk_mobile.utils.FileExporter;
+import com.example.gk_mobile.utils.StudentFileImporter;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import android.widget.AutoCompleteTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +38,42 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
     private StudentAdapter adapter;
     private FirebaseFirestore db;
     private final List<Student> studentList = new ArrayList<>();
+
+    // Biến cờ phân biệt đang import Excel hay CSV
+    private boolean isImportingExcel = true;
+
+    // Launcher mở file Import (Hỗ trợ cả Excel và CSV)
+    private final ActivityResultLauncher<String[]> filePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            uri -> {
+                if (uri != null) {
+                    showImportProgressDialog(uri, isImportingExcel);
+                }
+            }
+    );
+
+    // Launcher tạo file để Export CSV
+    private final ActivityResultLauncher<String> createCsvLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument("text/csv"),
+            uri -> {
+                if (uri != null) {
+                    FileExporter.exportStudentsToCsv(this, uri, studentList);
+                }
+            }
+    );
+
+    // Launcher tạo file để Export Excel
+    private final ActivityResultLauncher<String> createExcelLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument(ExcelExporter.MIME_TYPE),
+            uri -> {
+                if (uri != null) {
+                    boolean ok = ExcelExporter.exportStudentsToExcel(this, uri, studentList);
+                    Toast.makeText(this,
+                            ok ? "Xuất file Excel thành công!" : "Xuất file Excel thất bại!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,16 +128,40 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
         });
 
         // Nút Sắp xếp đa tiêu chí
-        binding.btnSort.setOnClickListener(v -> {
-            showMultiCriteriaSortDialog();
+        binding.btnSort.setOnClickListener(v -> showMultiCriteriaSortDialog());
+
+        // Nút Lọc nâng cao
+        binding.btnFilter.setOnClickListener(v -> showFilterDialog());
+
+        // --- CÁC NÚT IMPORT / EXPORT (EXCEL & CSV) ---
+        binding.btnImportExcel.setOnClickListener(v -> {
+            isImportingExcel = true;
+            filePickerLauncher.launch(new String[]{
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            });
         });
 
-        // nút lọc
-        binding.btnFilter.setOnClickListener(v -> {
-            showFilterDialog();
+        binding.btnExportExcel.setOnClickListener(v -> {
+            if (studentList.isEmpty()) {
+                Toast.makeText(this, "Không có dữ liệu sinh viên để xuất!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            createExcelLauncher.launch("DanhSachSinhVien.xlsx");
         });
 
+        binding.btnImportCsv.setOnClickListener(v -> {
+            isImportingExcel = false;
+            filePickerLauncher.launch(new String[]{
+                    "text/csv",
+                    "text/comma-separated-values",
+                    "application/vnd.ms-excel",
+                    "text/plain"
+            });
+        });
 
+        binding.btnExportCsv.setOnClickListener(v -> {
+            createCsvLauncher.launch("DanhSachSinhVien.csv");
+        });
     }
 
     private void loadStudentsFromFirestore() {
@@ -108,7 +178,6 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
                     if (value != null) {
                         for (QueryDocumentSnapshot doc : value) {
                             Student student = doc.toObject(Student.class);
-                            // Đảm bảo gán ID từ document vào model nếu cần
                             studentList.add(student);
                         }
                     }
@@ -130,7 +199,7 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
 
         android.widget.CheckBox chkFaculty = dialogView.findViewById(R.id.chkFaculty);
         android.widget.CheckBox chkClassName = dialogView.findViewById(R.id.chkClassName);
-        android.widget.CheckBox chkName = dialogView.findViewById(R.id.chkName); // Thêm Tên
+        android.widget.CheckBox chkName = dialogView.findViewById(R.id.chkName);
         android.widget.CheckBox chkAge = dialogView.findViewById(R.id.chkAge);
         android.widget.CheckBox chkGender = dialogView.findViewById(R.id.chkGender);
         android.widget.CheckBox chkStudentCode = dialogView.findViewById(R.id.chkStudentCode);
@@ -138,7 +207,7 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
         android.widget.RadioButton radioAZ = dialogView.findViewById(R.id.radioAZ);
         android.widget.RadioButton radioSmallToLarge = dialogView.findViewById(R.id.radioSmallToLarge);
 
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle("Tùy chỉnh sắp xếp đa tiêu chí")
                 .setView(dialogView)
                 .setPositiveButton("Áp dụng", (dialog, which) -> {
@@ -149,7 +218,7 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
                         adapter.sortWithTwoGroups(
                                 chkFaculty.isChecked(),
                                 chkClassName.isChecked(),
-                                chkName.isChecked(), // Truyền thêm trạng thái chọn Tên
+                                chkName.isChecked(),
                                 chkAge.isChecked(),
                                 chkGender.isChecked(),
                                 chkStudentCode.isChecked(),
@@ -178,10 +247,8 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
         com.google.android.material.textfield.TextInputEditText edtAge = dialogView.findViewById(R.id.edtAge);
         AutoCompleteTextView actvStudentCode = dialogView.findViewById(R.id.actvStudentCode);
 
-        android.widget.RadioButton radioGenderAll = dialogView.findViewById(R.id.radioGenderAll);
         android.widget.RadioButton radioGenderMale = dialogView.findViewById(R.id.radioGenderMale);
 
-        // 1. Trích xuất danh sách độc lập các Khoa, Lớp, Tên, Mã SV từ studentList hiện có để làm gợi ý AutoComplete
         List<String> facultyList = new ArrayList<>();
         List<String> classList = new ArrayList<>();
         List<String> nameList = new ArrayList<>();
@@ -194,10 +261,8 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
             if (s.getStudentCode() != null && !codeList.contains(s.getStudentCode())) codeList.add(s.getStudentCode());
         }
 
-        // Đổ dữ liệu gợi ý vào các AutoCompleteTextView
-        android.widget.ArrayAdapter<String> facultyAdapter = new android.widget.ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, facultyList);
-        actvFaculty.setAdapter(facultyAdapter);
-        actvFaculty.setThreshold(1); // Gợi ý ngay từ ký tự đầu tiên
+        actvFaculty.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, facultyList));
+        actvFaculty.setThreshold(1);
 
         final android.widget.ArrayAdapter<String>[] classAdapter = new android.widget.ArrayAdapter[]{
                 new android.widget.ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, classList)
@@ -211,7 +276,6 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
         actvStudentCode.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, codeList));
         actvStudentCode.setThreshold(1);
 
-        // 2. LOGIC RÀNG BUỘC: Khi chọn/nhập Khoa, tự động lọc danh sách Lớp tương ứng trong khoa đó
         actvFaculty.setOnItemClickListener((parent, view, position, id) -> {
             String selectedFaculty = parent.getItemAtPosition(position).toString();
             List<String> filteredClasses = new ArrayList<>();
@@ -220,14 +284,12 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
                     filteredClasses.add(s.getClassName());
                 }
             }
-            // Cập nhật lại Adapter cho ô Lớp chỉ hiển thị lớp trong Khoa vừa chọn
             classAdapter[0] = new android.widget.ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, filteredClasses);
             actvClassName.setAdapter(classAdapter[0]);
-            actvClassName.setText("", false); // Xóa text cũ của lớp khi đổi khoa
+            actvClassName.setText("", false);
         });
 
-        // 3. Hiển thị Dialog Lọc
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle("Bộ lọc tìm kiếm sinh viên")
                 .setView(dialogView)
                 .setPositiveButton("Lọc", (dialog, which) -> {
@@ -248,7 +310,6 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
                 })
                 .setNeutralButton("Xóa bộ lọc", (dialog, which) -> {
                     if (adapter != null) {
-                        // Đưa về danh sách đầy đủ ban đầu
                         adapter.filterMultiCriteria("", "", "", "", "Tất cả", "");
                         Toast.makeText(this, "Đã xóa bộ lọc, hiển thị toàn bộ", Toast.LENGTH_SHORT).show();
                     }
@@ -257,28 +318,73 @@ public class StudentListActivity extends AppCompatActivity implements StudentAda
                 .show();
     }
 
+    // Hiển thị Dialog tiến độ khi Import file
+    private void showImportProgressDialog(Uri fileUri, boolean isExcel) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_import_progress, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        ProgressBar progressBar = dialogView.findViewById(R.id.progressBarImport);
+        TextView tvStatus = dialogView.findViewById(R.id.tvImportStatus);
+        LinearLayout layoutStats = dialogView.findViewById(R.id.layoutImportStats);
+        TextView tvSuccess = dialogView.findViewById(R.id.tvSuccessCount);
+        TextView tvDuplicate = dialogView.findViewById(R.id.tvDuplicateCount);
+        TextView tvError = dialogView.findViewById(R.id.tvErrorCount);
+        MaterialButton btnClose = dialogView.findViewById(R.id.btnImportClose);
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
+
+        StudentFileImporter.importFile(this, fileUri, isExcel, new StudentFileImporter.ImportCallback() {
+            @Override
+            public void onProgress(String statusMessage) {
+                runOnUiThread(() -> tvStatus.setText(statusMessage));
+            }
+
+            @Override
+            public void onSuccess(int successCount, int duplicateCount, int errorCount) {
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    tvStatus.setText("Import hoàn tất!");
+                    layoutStats.setVisibility(View.VISIBLE);
+                    tvSuccess.setText("• Thêm mới thành công: " + successCount + " dòng");
+                    tvDuplicate.setText("• Trùng mã (bỏ qua): " + duplicateCount + " dòng");
+                    tvError.setText("• Lỗi định dạng/thiếu trường: " + errorCount + " dòng");
+                    btnClose.setEnabled(true);
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    tvStatus.setText("Lỗi: " + errorMessage);
+                    btnClose.setEnabled(true);
+                });
+            }
+        });
+    }
+
     @Override
     public void onItemClick(Student student) {
-        // Xử lý khi bấm vào item xem chi tiết
         Toast.makeText(this, "Chọn sinh viên: " + student.getName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onEditStudent(Student student) {
-        // Chuyển sang màn hình sửa sinh viên
         Intent intent = new Intent(StudentListActivity.this, StudentFormActivity.class);
-        // Truyền studentCode hoặc ID sang form sửa nếu cần
         startActivity(intent);
     }
 
     @Override
     public void onDeleteStudent(Student student) {
-        // Xử lý xóa sinh viên
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa")
                 .setMessage("Bạn có chắc muốn xóa sinh viên " + student.getName() + " không?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
-                    // Thực hiện xóa trên Firestore theo studentCode hoặc documentId
+                    // Xử lý xóa trên Firestore
                 })
                 .setNegativeButton("Hủy", null)
                 .show();

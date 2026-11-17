@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Import Danh Sách Sinh Viên"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Thanh tiến độ (hiển thị khi đang xử lý) -->
+    <ProgressBar
+        android:id="@+id/progressBarImport"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Trạng thái chi tiết -->
+    <TextView
+        android:id="@+id/tvImportStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đang đọc file và kiểm tra dữ liệu..."
+        android:textSize="14sp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Thống kê kết quả (hiển thị sau khi xử lý xong) -->
+    <LinearLayout
+        android:id="@+id/layoutImportStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvSuccessCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Thành công: 0 dòng"
+            android:textColor="#2E7D32"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvDuplicateCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Trùng mã (bỏ qua/ghi đè): 0 dòng"
+            android:textColor="#F57C00"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvErrorCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Lỗi định dạng/thiếu trường: 0 dòng"
+            android:textColor="#D32F2F"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- Nút đóng / xác nhận -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnImportClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đóng"
+        android:enabled="false"/>
+
+</LinearLayout>
