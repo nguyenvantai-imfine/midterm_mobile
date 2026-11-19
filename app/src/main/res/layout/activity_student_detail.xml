@@ -212,15 +212,12 @@
                 android:indeterminate="true"
                 android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/tvCertificatesEmpty"
+            <include
+                android:id="@+id/certEmptyState"
+                layout="@layout/view_empty_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="Sinh viên này chưa có chứng chỉ nào"
-                android:textColor="#757575"
+                android:layout_marginTop="8dp"
                 android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView

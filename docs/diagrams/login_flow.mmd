@@ -1,0 +1,18 @@
+flowchart TD
+    A(["Mở ứng dụng"]) --> B{"Đã đăng nhập<br/>Firebase Auth?"}
+    B -- "Chưa" --> C["Màn hình đăng nhập<br/>nhập email, mật khẩu"]
+    C --> D{"Firebase Auth<br/>xác thực thành công?"}
+    D -- "Sai" --> E["Báo lỗi đăng nhập"] --> C
+    D -- "Đúng" --> F["Đọc users / uid trên Firestore"]
+    B -- "Rồi" --> F
+    F --> G{"Document<br/>tồn tại?"}
+    G -- "Không" --> H["Đăng xuất, báo lỗi"]
+    G -- "Có" --> I{"status = Locked?"}
+    I -- "Có" --> J["Đăng xuất, báo<br/>tài khoản bị khóa"]
+    I -- "Không" --> K["Lấy role, lưu vào phiên<br/>(SessionManager)"]
+    K --> L["Ghi lịch sử đăng nhập<br/>users / uid / loginHistory"]
+    L --> M["Màn hình chính MainActivity"]
+    M --> N{"role"}
+    N -- "admin" --> O["Thấy: Sinh viên, Lịch sử,<br/>Quản lý người dùng"]
+    N -- "manager" --> P["Thấy: Sinh viên (thêm/sửa/xóa,<br/>import), Lịch sử"]
+    N -- "employee" --> Q["Thấy: Sinh viên (chỉ xem,<br/>export), Lịch sử"]

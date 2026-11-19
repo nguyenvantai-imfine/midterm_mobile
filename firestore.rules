@@ -1,13 +1,17 @@
 rules_version = '2';
 
 // Security Rules cho ứng dụng quản lý sinh viên (3 role: admin, manager, employee).
-// Dán toàn bộ nội dung file này vào Firebase Console > Firestore Database > Rules > Publish.
+// Dán toàn bộ nội dung file này vào Firebase Console > Firestore Database > Rules > Publish,
+// rồi chạy các kịch bản trong docs/security_rules_tests.md bằng Rules Playground.
 //
 // Quy tắc theo đề bài:
 //  - admin   : làm được mọi việc.
-//  - manager : làm được mọi việc liên quan đến sinh viên và chứng chỉ.
+//  - manager : làm được mọi việc liên quan đến sinh viên và chứng chỉ (không quản lý user).
 //  - employee: chỉ xem; chỉ được sửa ảnh đại diện (avatarUrl) của chính mình.
 //  - Tài khoản bị khóa (status = Locked) không truy cập được dữ liệu.
+//
+// Lưu ý: role/status được so sánh KHÔNG phân biệt hoa thường và có giá trị mặc định,
+// vì tài khoản admin có sẵn thường được tạo tay trong Console (có thể ghi "Admin" hoặc thiếu status).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -16,21 +20,30 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Document users/{uid} của người đang đăng nhập (null-safe: get() lỗi => bị từ chối).
-    function me() {
+    // Document users/{uid} của người đang đăng nhập (không có document => get() lỗi => bị từ chối).
+    function myDoc() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
+    function myRole() {
+      return myDoc().get('role', '').lower();
+    }
+
+    function myStatus() {
+      return myDoc().get('status', 'Normal').lower();
+    }
+
+    // Đang đăng nhập và không bị khóa ("Locked", "lock", "khóa"... giống Constants.isStatusLocked trong app).
     function isActive() {
-      return signedIn() && me().status != 'Locked' && me().status != 'locked';
+      return signedIn() && !myStatus().matches('.*(lock|kh[oó]a).*');
     }
 
     function isAdmin() {
-      return isActive() && me().role == 'admin';
+      return isActive() && myRole() == 'admin';
     }
 
     function isManager() {
-      return isActive() && me().role == 'manager';
+      return isActive() && myRole() == 'manager';
     }
 
     function isOwner(uid) {

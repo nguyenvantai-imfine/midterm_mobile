@@ -1,0 +1,10 @@
+flowchart TD
+    DB[("Cloud Firestore")]
+    DB --> U["users / {uid}"]
+    DB --> S["students / {studentCode}"]
+    U --> UF["name, age, phone, address, email<br/>role: admin | manager | employee<br/>status: Normal | Locked<br/>avatarUrl, createdAt"]
+    U --> LH["loginHistory / {autoId}"]
+    LH --> LHF["loginAt (timestamp)<br/>device (string)"]
+    S --> SF["studentCode, name, age, gender<br/>className, faculty, email<br/>phone, address, createdAt"]
+    S --> CE["certificates / {autoId}"]
+    CE --> CEF["name, issuer<br/>issueDate (timestamp)<br/>expiryDate (timestamp, có thể trống)<br/>note"]

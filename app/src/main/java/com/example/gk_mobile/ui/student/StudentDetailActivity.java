@@ -8,7 +8,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.gk_mobile.adapter.CertificateAdapter;
 import com.example.gk_mobile.databinding.ActivityStudentDetailBinding;
@@ -17,6 +16,7 @@ import com.example.gk_mobile.model.Certificate;
 import com.example.gk_mobile.model.Student;
 import com.example.gk_mobile.repository.CertificateRepository;
 import com.example.gk_mobile.repository.StudentRepository;
+import com.example.gk_mobile.ui.common.BaseActivity;
 import com.example.gk_mobile.utils.CertificateExporter;
 import com.example.gk_mobile.utils.CertificateFileImporter;
 import com.example.gk_mobile.utils.SessionManager;
@@ -25,7 +25,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentDetailActivity extends AppCompatActivity {
+public class StudentDetailActivity extends BaseActivity {
 
     /** Số dòng lỗi tối đa hiển thị trong hộp thoại import. */
     private static final int MAX_ERROR_LINES_SHOWN = 15;
@@ -137,6 +137,15 @@ public class StudentDetailActivity extends AppCompatActivity {
         binding.btnAddCertificate.setVisibility(canManage ? View.VISIBLE : View.GONE);
         binding.btnAddCertificate.setOnClickListener(v -> showCertificateForm(null));
 
+        // Nút "Thử lại" của trạng thái lỗi: đăng ký lại listener Firestore.
+        binding.certEmptyState.btnEmptyAction.setOnClickListener(v -> {
+            if (certificatesListener != null) {
+                certificatesListener.remove();
+                certificatesListener = null;
+            }
+            startListeningCertificates();
+        });
+
         // Import chỉ dành cho admin/manager; xuất file thì mọi role đều dùng được.
         binding.btnImportCertificates.setVisibility(canManage ? View.VISIBLE : View.GONE);
         binding.btnImportCertificates.setOnClickListener(v -> importCertificatesLauncher.launch(new String[]{
@@ -150,7 +159,7 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         binding.btnExportCertificatesCsv.setOnClickListener(v -> {
             if (currentCertificates.isEmpty()) {
-                Toast.makeText(this, "Chưa có chứng chỉ nào để xuất!", Toast.LENGTH_SHORT).show();
+                showToast("Chưa có chứng chỉ nào để xuất!");
                 return;
             }
             exportCsvLauncher.launch("ChungChi_" + student.getStudentCode() + ".csv");
@@ -158,7 +167,7 @@ public class StudentDetailActivity extends AppCompatActivity {
 
         binding.btnExportCertificatesExcel.setOnClickListener(v -> {
             if (currentCertificates.isEmpty()) {
-                Toast.makeText(this, "Chưa có chứng chỉ nào để xuất!", Toast.LENGTH_SHORT).show();
+                showToast("Chưa có chứng chỉ nào để xuất!");
                 return;
             }
             exportExcelLauncher.launch("ChungChi_" + student.getStudentCode() + ".xlsx");
@@ -177,16 +186,26 @@ public class StudentDetailActivity extends AppCompatActivity {
                         currentCertificates.clear();
                         currentCertificates.addAll(certificates);
                         certificateAdapter.setCertificates(certificates);
-                        binding.tvCertificatesEmpty.setVisibility(certificates.isEmpty() ? View.VISIBLE : View.GONE);
+                        showCertificateState(certificates.isEmpty() ? "Sinh viên này chưa có chứng chỉ nào" : null, false);
                     }
 
                     @Override
                     public void onError(Exception e) {
                         binding.progressCertificates.setVisibility(View.GONE);
-                        Toast.makeText(StudentDetailActivity.this,
-                                "Không tải được chứng chỉ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        showCertificateState("Không tải được chứng chỉ: " + e.getMessage(), true);
                     }
                 });
+    }
+
+    /** Hiện trạng thái trống/lỗi dưới danh sách chứng chỉ; message = null thì ẩn đi. */
+    private void showCertificateState(String message, boolean showRetry) {
+        if (message == null) {
+            binding.certEmptyState.getRoot().setVisibility(View.GONE);
+            return;
+        }
+        binding.certEmptyState.tvEmptyMessage.setText(message);
+        binding.certEmptyState.btnEmptyAction.setVisibility(showRetry ? View.VISIBLE : View.GONE);
+        binding.certEmptyState.getRoot().setVisibility(View.VISIBLE);
     }
 
     /** Hộp thoại tiến độ và kết quả import, liệt kê rõ từng dòng bị lỗi. */
@@ -262,24 +281,21 @@ public class StudentDetailActivity extends AppCompatActivity {
     }
 
     private void confirmDeleteCertificate(Certificate certificate) {
-        new AlertDialog.Builder(this)
-                .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc chắn muốn xóa chứng chỉ \"" + certificate.getName() + "\"?")
-                .setPositiveButton("Xóa", (dialog, which) ->
-                        certificateRepository.deleteCertificate(student.getStudentCode(), certificate.getId(), new CertificateRepository.OnActionListener() {
+        showConfirmDialog("Xác nhận xóa",
+                "Bạn có chắc chắn muốn xóa chứng chỉ \"" + certificate.getName() + "\"?",
+                "Xóa",
+                () -> certificateRepository.deleteCertificate(student.getStudentCode(), certificate.getId(),
+                        new CertificateRepository.OnActionListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(StudentDetailActivity.this, "Đã xóa chứng chỉ!", Toast.LENGTH_SHORT).show();
+                                showToast("Đã xóa chứng chỉ!");
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                Toast.makeText(StudentDetailActivity.this,
-                                        "Lỗi khi xóa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                showToast("Lỗi khi xóa: " + e.getMessage());
                             }
-                        }))
-                .setNegativeButton("Hủy", null)
-                .show();
+                        }));
     }
 
     private void displayStudent() {
@@ -307,24 +323,25 @@ public class StudentDetailActivity extends AppCompatActivity {
     }
 
     private void confirmDelete() {
-        new AlertDialog.Builder(this)
-                .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc chắn muốn xóa sinh viên này cùng toàn bộ chứng chỉ của họ?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
+        showConfirmDialog("Xác nhận xóa",
+                "Bạn có chắc chắn muốn xóa sinh viên này cùng toàn bộ chứng chỉ của họ?",
+                "Xóa",
+                () -> {
+                    showLoading("Đang xóa sinh viên...");
                     studentRepository.deleteStudentWithCertificates(student.getStudentCode(), new StudentRepository.OnActionListener() {
                         @Override
                         public void onSuccess() {
-                            Toast.makeText(StudentDetailActivity.this, "Đã xóa sinh viên!", Toast.LENGTH_SHORT).show();
+                            hideLoading();
+                            showToast("Đã xóa sinh viên!");
                             finish();
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            Toast.makeText(StudentDetailActivity.this, "Lỗi khi xóa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            hideLoading();
+                            showToast("Lỗi khi xóa: " + e.getMessage());
                         }
                     });
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+                });
     }
 }
