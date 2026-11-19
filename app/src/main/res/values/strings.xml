@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-<resources>
-    <string name="app_name">midterm_mobile</string>
-</resources>
-=======
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Quản lý Sinh viên</string>
@@ -62,4 +57,3 @@
     <string name="login_history_title">Lịch sử Đăng nhập</string>
     <string name="login_history_empty">Chưa có lịch sử đăng nhập</string>
 </resources>
->>>>>>> duc
